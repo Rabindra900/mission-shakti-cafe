@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+.my-orders {
+    max-width: 900px;
+    margin: auto;
+}
+
+.order-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.order-id {
+    font-weight: 700;
+}
+
+.status {
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.status-preparing {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-delivered {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.order-items li {
+    font-size: 14px;
+}
+
+.order-total {
+    margin-top: 8px;
+    font-weight: 700;
+    color: #7f1d1d;
+}
+
+.order-message {
+    margin-top: 12px;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.msg-preparing {
+    background: #ecfdf5;
+    color: #065f46;
+}
+
+.msg-delivered {
+    background: #dcfce7;
+    color: #166534;
+}
+</style>
+
+<div class="my-orders">
+    <h2>📦 My Orders</h2>
+
+    {% if orders %}
+        {% for order in orders %}
+        <div class="order-card"
+             id="order-{{ order.id }}"
+             data-status="{{ order.status }}">
+
+            <div class="order-header">
+                <div class="order-id">Order #{{ order.id }}</div>
+
+                <span id="status-{{ order.id }}" class="status">
+                    {{ order.status }}
+                </span>
+            </div>
+
+            <ul class="order-items">
+                {% for item in order.items %}
+                <li>{{ item.dish.name }} × {{ item.quantity }}</li>
+                {% endfor %}
+            </ul>
+
+            <div class="order-total">
+                Total: ₹ {{ order.total_amount }}
+            </div>
+
+            <div id="msg-{{ order.id }}" class="order-message"></div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>No orders found.</p>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const orderCards = document.querySelectorAll(".order-card");
+
+    orderCards.forEach(card => {
+        const orderId = card.id.replace("order-", "");
+        const status = card.dataset.status;
+
+        const msgEl = document.getElementById("msg-" + orderId);
+        const statusEl = document.getElementById("status-" + orderId);
+
+        if (!msgEl || !statusEl) return;
+
+        /* DELIVERED — ONLY BACKEND CONTROLS THIS */
+        if (status === "Delivered") {
+            statusEl.textContent = "Delivered";
+            statusEl.classList.add("status-delivered");
+
+            msgEl.textContent = "✅ Your order delivered successfully";
+            msgEl.classList.add("msg-delivered");
+            return;
+        }
+
+        /* PREPARING */
+        statusEl.textContent = "Preparing";
+        statusEl.classList.add("status-preparing");
+
+        msgEl.innerHTML =
+            "🍳 Your order is <b>preparing</b>.<br>" +
+            "🚚 Delivered by <b>30 min</b> at your location.";
+
+        msgEl.classList.add("msg-preparing");
+    });
+
+});
+</script>
+
+{% endblock %}

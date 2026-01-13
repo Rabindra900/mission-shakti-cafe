@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="admin-dashboard">
+
+    <!-- Header -->
+    <div class="admin-dashboard-header">
+        <h2>Admin Dashboard</h2>
+        <p>Quick overview of Mission Shakti Cafe dishes, orders & customer logins.</p>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="admin-card-grid">
+
+        <div class="admin-card admin-card-primary">
+            <span class="admin-card-label">Total Dishes</span>
+            <span class="admin-card-value">{{ total_dishes }}</span>
+        </div>
+
+        <div class="admin-card admin-card-accent">
+            <span class="admin-card-label">Total Orders</span>
+            <span class="admin-card-value">{{ total_orders }}</span>
+        </div>
+
+        <div class="admin-card admin-card-warning">
+            <span class="admin-card-label">Pending Orders</span>
+            <span class="admin-card-value">{{ pending_orders }}</span>
+        </div>
+
+        <div class="admin-card admin-card-primary">
+            <span class="admin-card-label">Total Customers</span>
+            <span class="admin-card-value">{{ total_customers }}</span>
+        </div>
+
+    </div>
+
+    <!-- Actions -->
+    <div class="admin-actions">
+        <a href="{{ url_for('admin_items') }}" class="btn small">Manage Dishes</a>
+        <a href="{{ url_for('admin_orders') }}" class="btn small">View Orders</a>
+        <a href="{{ url_for('admin_logout') }}" class="btn small btn-outline">Logout</a>
+    </div>
+
+    <!-- Latest Customers -->
+    <h3 style="margin-top:24px;font-size:16px;">Latest Customer Logins</h3>
+
+    {% if latest_customers %}
+    <table class="cart-table">
+        <thead>
+            <tr>
+                <th>Phone</th>
+                <th>First Login</th>
+                <th>Last Login</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in latest_customers %}
+            <tr>
+                <td data-label="Phone">{{ c.phone }}</td>
+
+                <td data-label="First Login">
+                    {% if c.created_at %}
+                        {{ c.created_at.strftime("%d-%m-%Y %H:%M") }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+
+                <td data-label="Last Login">
+                    {% if c.last_login_at %}
+                        {{ c.last_login_at.strftime("%d-%m-%Y %H:%M") }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p style="font-size:13px;color:#6b7280;margin-top:8px;">
+            No customer logins found yet.
+        </p>
+    {% endif %}
+
+</section>
+
+{% endblock %}

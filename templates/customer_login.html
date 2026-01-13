@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="login-wrapper">
+
+    <div class="login-card">
+
+        <div class="login-header">
+            <h2>Customer Login</h2>
+            <p>Login with your mobile number to order food</p>
+        </div>
+
+        {% if error %}
+            <div class="login-error">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="POST" class="login-form">
+
+            <label>
+                Mobile Number
+                <input type="tel"
+                       name="phone"
+                       placeholder="Enter 10-digit mobile number"
+                       minlength="10"
+                       maxlength="10"
+                       required>
+            </label>
+
+            <button type="submit" class="btn login-btn">
+                Continue →
+            </button>
+
+        </form>
+
+        <div class="login-footer">
+            <small>
+                🔒 Your number is used only for order updates
+            </small>
+        </div>
+
+    </div>
+
+</div>
+
+<style>
+/* =====================
+   CUSTOMER LOGIN – MOBILE FIRST
+   ===================== */
+
+.login-wrapper {
+    min-height: calc(100vh - 100px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 420px;
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 26px;
+    box-shadow: 0 18px 45px rgba(0,0,0,0.12);
+    border: 1px solid #e5e7eb;
+}
+
+/* Header */
+.login-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.login-header h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+    color: #7f1d1d;
+}
+
+.login-header p {
+    font-size: 13px;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+/* Error */
+.login-error {
+    background: #fee2e2;
+    color: #b91c1c;
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 12px;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* Form */
+.login-form label {
+    font-size: 13px;
+    color: #374151;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.login-form input {
+    width: 100%;
+    padding: 12px;
+    font-size: 15px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    margin-bottom: 16px;
+}
+
+.login-form input:focus {
+    border-color: #fbbf24;
+    box-shadow: 0 0 0 2px rgba(251,191,36,0.35);
+    outline: none;
+}
+
+/* Button */
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    border-radius: 12px;
+}
+
+/* Footer */
+.login-footer {
+    margin-top: 14px;
+    text-align: center;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+/* Small screens */
+@media (max-width: 420px) {
+    .login-card {
+        padding: 22px;
+    }
+}
+</style>
+
+{% endblock %}

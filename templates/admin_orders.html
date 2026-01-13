@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="admin-dashboard">
+
+    <!-- Header -->
+    <div class="admin-dashboard-header">
+        <h2>Orders</h2>
+        <p>View, filter and update customer orders.</p>
+    </div>
+
+    <!-- Filter -->
+    <form method="get" style="margin-bottom:16px;">
+        <label style="font-size:14px;">
+            Filter by Status
+            <select name="status" onchange="this.form.submit()">
+                <option value="All" {% if status_filter == 'All' %}selected{% endif %}>All</option>
+                <option value="Pending" {% if status_filter == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Accepted" {% if status_filter == 'Accepted' %}selected{% endif %}>Accepted</option>
+                <option value="Delivered" {% if status_filter == 'Delivered' %}selected{% endif %}>Delivered</option>
+            </select>
+        </label>
+    </form>
+
+    {% if orders %}
+        {% for order in orders %}
+
+        <!-- ORDER CARD -->
+        <div class="menu-card" style="margin-bottom:16px;">
+
+            <!-- Top row -->
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+                <h3 style="margin:0;font-size:15px;">
+                    Order #{{ order.id }} – {{ order.customer_name }}
+                </h3>
+
+                <!-- Status badge -->
+                <span style="
+                    padding:4px 12px;
+                    border-radius:999px;
+                    font-size:12px;
+                    font-weight:600;
+                    {% if order.status == 'Pending' %}
+                        background:#fef3c7;color:#92400e;
+                    {% elif order.status == 'Accepted' %}
+                        background:#d1fae5;color:#065f46;
+                    {% elif order.status == 'Delivered' %}
+                        background:#dbebff;color:#1d4ed8;
+                    {% endif %}
+                ">
+                    {{ order.status }}
+                </span>
+            </div>
+
+            <!-- Order info -->
+            <p style="margin:6px 0;font-size:13px;">
+                <strong>Phone:</strong> {{ order.phone }}
+            </p>
+
+            <p style="margin:6px 0;font-size:13px;">
+                <strong>Address:</strong> {{ order.address }}
+            </p>
+
+            <p style="margin:6px 0;font-size:13px;">
+                <strong>Payment:</strong> {{ order.payment_method }}
+            </p>
+
+            <p style="margin:6px 0;font-size:13px;">
+                <strong>Placed:</strong>
+                {% if order.created_at %}
+                    {{ order.created_at.strftime("%d-%m-%Y %H:%M") }}
+                {% else %}
+                    -
+                {% endif %}
+            </p>
+
+            <p style="margin:6px 0;font-size:14px;font-weight:600;">
+                Total: ₹{{ order.total_amount }}
+            </p>
+
+            <!-- Items -->
+            <div style="margin-top:8px;">
+                <strong style="font-size:14px;">Items</strong>
+                <ul style="margin:6px 0 0;padding-left:18px;font-size:13px;">
+                    {% for item in order.items %}
+                        <li>
+                            {{ item.dish.name }} × {{ item.quantity }}
+                            = ₹{{ item.quantity * item.price }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- WhatsApp -->
+            {% set admin_msg =
+                'Hello ' ~ order.customer_name ~
+                ', this is Mission Shakti Cafe regarding your order #' ~ order.id ~
+                '. Your order status is ' ~ order.status ~ '.'
+            %}
+            <div style="margin-top:10px;">
+                <a class="btn btn-outline small"
+                   href="https://wa.me/91{{ order.phone }}?text={{ admin_msg|urlencode }}"
+                   target="_blank">
+                    📲 WhatsApp Customer
+                </a>
+            </div>
+
+            <!-- Status update -->
+            <form method="post"
+                  action="{{ url_for('update_order_status', order_id=order.id) }}"
+                  style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+
+                <label style="font-size:13px;">
+                    Update Status
+                    <select name="status">
+                        <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %}>Pending</option>
+                        <option value="Accepted" {% if order.status == 'Accepted' %}selected{% endif %}>Accepted</option>
+                        <option value="Delivered" {% if order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                    </select>
+                </label>
+
+                <button type="submit" class="btn small">
+                    Save
+                </button>
+            </form>
+
+        </div>
+        {% endfor %}
+
+    {% else %}
+        <p style="font-size:14px;color:#6b7280;">
+            No orders found.
+        </p>
+    {% endif %}
+
+    <a href="{{ url_for('admin_dashboard') }}" class="btn small">
+        ⟵ Back to Dashboard
+    </a>
+
+</section>
+
+{% endblock %}

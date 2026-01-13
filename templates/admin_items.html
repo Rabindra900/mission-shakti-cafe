@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- =====================
+     ADD NEW DISH
+     ===================== -->
+<div class="manage-wrapper">
+    <div class="manage-header">Add New Dish</div>
+
+    <form method="post" enctype="multipart/form-data" class="dish-form">
+
+        <label>
+            Dish Name
+            <input type="text" name="name" required>
+        </label>
+
+        <label>
+            Selling Price (₹)
+            <input type="number" name="price" min="1" required>
+        </label>
+
+        <label>
+            MRP (₹)
+            <input type="number" name="mrp" min="1">
+        </label>
+
+        <label>
+            Category
+            <input type="text" name="category" placeholder="Snacks / Meals / Drinks" required>
+        </label>
+
+        <label>
+            Veg / Non-Veg
+            <select name="veg_type">
+                <option value="">Select</option>
+                <option value="Veg">Veg</option>
+                <option value="Non-veg">Non-veg</option>
+            </select>
+        </label>
+
+        <label>
+            Dish Image
+            <input type="file" name="image" accept="image/*">
+        </label>
+
+        <label class="tag-checkbox">
+            <input type="checkbox" name="best_seller"> Best Seller
+        </label>
+
+        <label class="tag-checkbox">
+            <input type="checkbox" name="is_new"> New Dish
+        </label>
+
+        <button type="submit" class="dish-add-btn">➕ Add Dish</button>
+    </form>
+</div>
+
+<!-- =====================
+     EXISTING DISHES (BLOCK VIEW)
+     ===================== -->
+<div class="manage-wrapper">
+    <div class="manage-header">Existing Dishes</div>
+
+    {% if dishes %}
+    <div class="menu-grid">
+
+        {% for dish in dishes %}
+        <div class="menu-card">
+
+            {% if dish.image_filename %}
+            <div class="dish-image-wrapper">
+                <img src="{{ url_for('static', filename='uploads/' ~ dish.image_filename) }}"
+                     class="dish-image"
+                     alt="{{ dish.name }}">
+            </div>
+            {% else %}
+            <div class="dish-image-wrapper">
+                <img src="{{ url_for('static', filename='images/default_food.jpg') }}"
+                     class="dish-image"
+                     alt="{{ dish.name }}">
+            </div>
+            {% endif %}
+
+            <h3>{{ dish.name }}</h3>
+
+            <p class="category">
+                {{ dish.category }}
+                {% if dish.veg_type %}
+                    • {{ dish.veg_type }}
+                {% endif %}
+            </p>
+
+            <div class="tag-badges">
+                {% if dish.is_best_seller %}
+                    <span class="tag-badge best">Best Seller</span>
+                {% endif %}
+                {% if dish.is_new %}
+                    <span class="tag-badge new">New</span>
+                {% endif %}
+            </div>
+
+            {% if dish.mrp %}
+                <p class="mrp">MRP <s>₹{{ dish.mrp }}</s></p>
+            {% endif %}
+
+            <p class="price">₹{{ dish.price }}</p>
+
+            <!-- ACTIONS -->
+            <div class="menu-actions">
+                <form action="{{ url_for('delete_dish', dish_id=dish.id) }}"
+                      method="POST"
+                      onsubmit="return confirm('Delete this dish?');">
+                    <button type="submit" class="btn btn-outline small" style="color:#b91c1c;border-color:#b91c1c;">
+                        🗑 Delete Dish
+                    </button>
+                </form>
+            </div>
+
+        </div>
+        {% endfor %}
+
+    </div>
+    {% else %}
+        <p style="font-size:14px;color:#6b7280;">
+            No dishes added yet.
+        </p>
+    {% endif %}
+</div>
+
+<a href="{{ url_for('admin_dashboard') }}" class="btn back-btn small">
+    ⟵ Back to Dashboard
+</a>
+
+{% endblock %}

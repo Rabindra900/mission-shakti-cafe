@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 style="margin-bottom:12px;">🛒 Your Cart</h2>
+
+{% if cart_items %}
+
+<form action="{{ url_for('update_cart') }}" method="post" id="cartForm">
+
+    <!-- DESKTOP TABLE -->
+    <table class="cart-table">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Price (₹)</th>
+                <th>Qty</th>
+                <th>Subtotal (₹)</th>
+                <th>Remove</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item in cart_items %}
+            <tr id="row-{{ item.id }}">
+                <td>{{ item.name }}</td>
+                <td><b>{{ item.price }}</b></td>
+                <td>
+                    <input type="number"
+                           name="qty_{{ item.id }}"
+                           id="qty-{{ item.id }}"
+                           value="{{ item.quantity }}"
+                           min="0"
+                           style="width:60px;text-align:center;">
+                </td>
+                <td><b>₹ {{ item.subtotal }}</b></td>
+                <td>
+                    <a href="#"
+                       onclick="removeItem({{ item.id }}); return false;"
+                       style="color:#b91c1c;font-size:13px;cursor:pointer;">
+                       Remove
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- MOBILE CARD VIEW -->
+    <div class="cart-mobile">
+        {% for item in cart_items %}
+        <div class="menu-card" id="card-{{ item.id }}">
+
+            <h3 style="margin:0;font-size:15px;">{{ item.name }}</h3>
+
+            <p style="font-size:13px;margin:4px 0;">
+                Price: ₹{{ item.price }}
+            </p>
+
+            <div style="display:flex;align-items:center;gap:8px;margin:6px 0;">
+                <label style="font-size:13px;">Qty</label>
+                <input type="number"
+                       name="qty_{{ item.id }}"
+                       id="qty-mobile-{{ item.id }}"
+                       value="{{ item.quantity }}"
+                       min="0"
+                       style="width:70px;text-align:center;">
+            </div>
+
+            <p style="font-size:14px;font-weight:600;">
+                Subtotal: ₹{{ item.subtotal }}
+            </p>
+
+            <a href="#"
+               onclick="removeItem({{ item.id }}); return false;"
+               style="color:#b91c1c;font-size:13px;">
+               Remove Item
+            </a>
+
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- TOTAL SUMMARY -->
+    <div class="cart-summary" style="margin-top:16px;">
+        <p style="font-size:16px;margin-bottom:10px;">
+            <strong>Total:</strong> ₹ {{ total }}
+        </p>
+
+        <button type="submit" class="btn small" style="margin-right:6px;">
+            Update Cart
+        </button>
+
+        <a href="{{ url_for('checkout') }}" class="btn">
+            Proceed to Checkout ➜
+        </a>
+    </div>
+
+</form>
+
+{% else %}
+
+<div style="text-align:center;margin-top:30px;">
+    <p style="font-size:14px;color:#666;">
+        Your cart is empty. Order something delicious 😋
+    </p>
+    <a class="btn" href="{{ url_for('menu') }}">
+        Browse Menu
+    </a>
+</div>
+
+{% endif %}
+
+<script>
+function removeItem(itemId) {
+    // Desktop qty
+    const qtyInput = document.getElementById("qty-" + itemId);
+    if (qtyInput) qtyInput.value = 0;
+
+    // Mobile qty
+    const qtyMobile = document.getElementById("qty-mobile-" + itemId);
+    if (qtyMobile) qtyMobile.value = 0;
+
+    // Fade UI
+    const row = document.getElementById("row-" + itemId);
+    if (row) row.style.opacity = "0.5";
+
+    const card = document.getElementById("card-" + itemId);
+    if (card) card.style.opacity = "0.5";
+
+    // Auto submit form
+    document.getElementById("cartForm").submit();
+}
+</script>
+
+<!-- MOBILE VISIBILITY -->
+<style>
+.cart-mobile { display:none; }
+
+@media (max-width: 768px) {
+    .cart-table { display:none; }
+    .cart-mobile { display:block; }
+}
+</style>
+
+{% endblock %}
+    

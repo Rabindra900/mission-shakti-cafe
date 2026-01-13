@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- =====================
+     HERO SECTION
+     ===================== -->
+<section class="home-hero"
+    style="
+        background:
+          linear-gradient(rgba(0,0,0,0.55), rgba(65, 63, 63, 0.55)),
+          url('{{ url_for('static', filename='images/home_bg.jpg') }}') no-repeat center / cover;
+    ">
+
+    <h1 class="mission">Mission Shakti Cafe</h1>
+    <p class="tagline">
+        Fresh, hygienic & home-style food prepared by empowered women.
+        Order online for quick delivery or takeaway.
+    </p>
+
+    <div style="margin-top:14px;">
+        <a class="btn" href="#menu-section">View Menu</a>
+        <a class="btn btn-outline"
+           target="_blank"
+           href="https://wa.me/917894332390?text={{ 'Hello, I want to order from Mission Shakti Cafe.'|urlencode }}">
+            WhatsApp Order
+        </a>
+    </div>
+</section>
+
+<!-- =====================
+     MENU SECTION
+     ===================== -->
+<h2 id="menu-section" style="margin-top:30px;">
+    Our Menu
+</h2>
+
+{% if menu_items %}
+<div class="menu-grid">
+
+    {% for item in menu_items %}
+    <div class="menu-card">
+
+        <!-- Discount -->
+        {% if item.mrp and item.mrp > item.price %}
+            {% set discount = ((item.mrp - item.price) * 100 // item.mrp) %}
+            <div class="discount-badge">{{ discount }}% OFF</div>
+        {% endif %}
+
+        <!-- Image -->
+        <div class="dish-image-wrapper">
+            {% if item.image_filename %}
+                <img src="{{ url_for('static', filename='uploads/' ~ item.image_filename) }}"
+                     class="dish-image"
+                     alt="{{ item.name }}">
+            {% else %}
+                <img src="{{ url_for('static', filename='images/default_food.jpg') }}"
+                     class="dish-image"
+                     alt="{{ item.name }}">
+            {% endif %}
+        </div>
+
+        <!-- Title -->
+        <h3>{{ item.name }}</h3>
+
+        <!-- Category -->
+        <p class="category">
+            {{ item.category }}
+            {% if item.veg_type %}
+                • {{ item.veg_type }}
+            {% endif %}
+        </p>
+
+        <!-- Tags -->
+        <div class="tag-badges">
+            {% if item.is_best_seller %}
+                <span class="tag-badge best">Best Seller</span>
+            {% endif %}
+            {% if item.is_new %}
+                <span class="tag-badge new">New</span>
+            {% endif %}
+        </div>
+
+        <!-- Price -->
+        {% if item.mrp and item.mrp > item.price %}
+            <p class="mrp">MRP <s>₹ {{ item.mrp }}</s></p>
+        {% endif %}
+        <p class="price">₹ {{ item.price }}</p>
+
+        <!-- Actions -->
+        <div class="menu-actions">
+            <a class="btn small"
+               href="{{ url_for('add_to_cart', item_id=item.id) }}">
+                Add to Cart
+            </a>
+
+            {% set msg =
+                'I want to order ' ~ item.name ~
+                ' for ₹' ~ item.price ~
+                ' from Mission Shakti Cafe.'
+            %}
+            <a class="btn btn-outline small"
+               target="_blank"
+               href="https://wa.me/917894332390?text={{ msg|urlencode }}">
+                WhatsApp
+            </a>
+        </div>
+
+    </div>
+    {% endfor %}
+
+</div>
+{% else %}
+    <p style="margin-top:12px;color:#6b7280;font-size:14px;">
+        No dishes available right now.
+        Please check again later or order via WhatsApp.
+    </p>
+{% endif %}
+
+{% endblock %}

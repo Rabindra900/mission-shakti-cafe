@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+/* =====================
+   CHECKOUT – MOBILE FIRST
+   ===================== */
+
+.checkout-page {
+    max-width: 900px;
+    margin: auto;
+    background: #ffffff;
+    padding: 18px;
+    border-radius: 20px;
+    box-shadow: 0 14px 40px rgba(0,0,0,0.08);
+    border: 1px solid #e5e7eb;
+}
+
+.checkout-heading {
+    font-size: 22px;
+    font-weight: 800;
+    color: #7f1d1d;
+    margin-bottom: 4px;
+}
+
+.checkout-subtitle {
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 16px;
+}
+
+.checkout-layout {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 18px;
+}
+
+/* =====================
+   FORM CARD
+   ===================== */
+
+.checkout-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid #e5e7eb;
+}
+
+.checkout-section-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #111827;
+}
+
+/* INPUT BLOCK STYLE */
+
+.checkout-form label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #374151;
+}
+
+.checkout-form input,
+.checkout-form textarea {
+    width: 100%;
+    padding: 14px;
+    font-size: 15px;
+    border-radius: 12px;
+    border: 1px solid #d1d5db;
+    margin-bottom: 14px;
+    background: #ffffff;
+}
+
+.checkout-form textarea {
+    min-height: 70px;
+    resize: none;
+}
+
+.checkout-form input:focus,
+.checkout-form textarea:focus {
+    outline: none;
+    border-color: #fbbf24;
+    box-shadow: 0 0 0 2px rgba(251,191,36,0.35);
+}
+
+/* PAYMENT BOX */
+
+.payment-box {
+    background: #fef3c7;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #78350f;
+    margin-bottom: 14px;
+}
+
+/* PLACE ORDER BUTTON */
+
+.checkout-place-btn {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 800;
+    border-radius: 999px;
+    margin-top: 4px;
+}
+
+/* =====================
+   SUMMARY CARD
+   ===================== */
+
+.checkout-summary-card {
+    background: #fffbeb;
+    border-radius: 16px;
+    border: 1px solid #fbbf24;
+    padding: 14px;
+}
+
+.checkout-summary-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
+}
+
+.checkout-summary-list li {
+    margin-bottom: 6px;
+}
+
+.checkout-summary-total {
+    margin-top: 12px;
+    font-size: 16px;
+    font-weight: 800;
+    color: #7f1d1d;
+}
+
+/* =====================
+   MOBILE
+   ===================== */
+
+@media (max-width: 768px) {
+    .checkout-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .checkout-page {
+        padding: 14px;
+    }
+}
+</style>
+
+<div class="checkout-page">
+
+    <h2 class="checkout-heading">Checkout</h2>
+    <p class="checkout-subtitle">
+        Enter delivery details and place your order
+    </p>
+
+    <div class="checkout-layout">
+
+        <!-- LEFT: CUSTOMER DETAILS -->
+        <div class="checkout-card">
+
+            <h3 class="checkout-section-title">Delivery Details</h3>
+
+            <!-- ✅ BACKEND CONNECTED FORM -->
+            <form method="POST" action="{{ url_for('checkout') }}" class="checkout-form">
+
+                <label>Full Name</label>
+                <input type="text"
+                       name="name"
+                       required
+                       placeholder="Your full name">
+
+                <label>Mobile Number (WhatsApp)</label>
+                <input type="tel"
+                       name="phone"
+                       required
+                       minlength="10"
+                       maxlength="10"
+                       placeholder="10-digit mobile number"
+                       value="{{ session.get('customer_phone','') }}">
+
+                <label>Address (House / Street / Landmark)</label>
+                <textarea name="address"
+                          required
+                          placeholder="House no, street, landmark, area"></textarea>
+
+                <div class="payment-box">
+                    💵 Payment Method: Cash on Delivery
+                </div>
+
+                <button type="submit" class="btn checkout-place-btn">
+                    Place Order 🚀
+                </button>
+
+            </form>
+        </div>
+
+        <!-- RIGHT: ORDER SUMMARY -->
+        <div class="checkout-card">
+
+            <h3 class="checkout-section-title">Order Summary</h3>
+
+            <div class="checkout-summary-card">
+                <ul class="checkout-summary-list">
+                    {% for item in cart_items %}
+                    <li>
+                        {{ item.name }} × {{ item.quantity }} = ₹{{ item.subtotal }}
+                    </li>
+                    {% endfor %}
+                </ul>
+
+                <p class="checkout-summary-total">
+                    Total: ₹ {{ total }}
+                </p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
