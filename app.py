@@ -19,7 +19,11 @@ ADMIN_MOBILE = "7978692808"
 # =========================
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "change_this_secret_key"
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///hotel.db"
+import os
+
+db_path = os.path.join(os.path.dirname(__file__), "hotel.db")
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///{}".format(db_path)
+
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 UPLOAD_FOLDER = os.path.join("static", "uploads")
@@ -399,3 +403,9 @@ def my_orders():
 if __name__ == "__main__":
     init_db()
     app.run()
+# this ensures db folder exists
+try:
+    with app.app_context():
+        db.create_all()
+except Exception as e:
+    print("DB init error:", e)
