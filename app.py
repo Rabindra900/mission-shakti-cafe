@@ -21,8 +21,17 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = "change_this_secret_key"
 import os
 
-db_path = os.path.join(os.path.dirname(__file__), "hotel.db")
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///{}".format(db_path)
+database_url = os.environ.get("DATABASE_URL")
+
+if database_url:
+    # Render / Production (PostgreSQL)
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_url.replace(
+        "postgres://", "postgresql://"
+    )
+else:
+    # Local development (SQLite)
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///hotel.db"
+
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
