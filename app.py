@@ -417,4 +417,5 @@ try:
     with app.app_context():
         db.create_all()
 except Exception as e:
+ 
     print("DB init error:", e)
